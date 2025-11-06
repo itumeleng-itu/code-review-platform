@@ -1,18 +1,10 @@
-// src/routes/project-routes.ts
 import { Router, Request, Response } from 'express';
-// Import security middleware
 import { authenticateToken, authorizeRole } from '../middleware/auth-middleware'; 
-// Import project repository functions
-import { 
-    createProject, 
-    listProjectsByUserId, 
-    addMemberToProject, 
-    removeMemberFromProject 
-} from '../repositories/project-repository';
+import { getProjectAnalytics } from '../repositories/analytics-repository';
+import { createProject, listProjectsByUserId, addMemberToProject, removeMemberFromProject } from '../repositories/project-repository';
 
 const projectRouter = Router();
 
-// Middleware to ensure the user is authenticated for all project routes
 projectRouter.use(authenticateToken); 
 
 // POST /api/projects - Create a project
@@ -49,8 +41,7 @@ projectRouter.get('/', async (req: Request, res: Response) => {
     }
 });
 
-// POST /api/projects/:id/members - Assign users (Reviewers) to a project
-// Only Reviewers (or the owner) should be able to do this, using the authorizeRole middleware
+// Assign users (Reviewers) to a project
 projectRouter.post('/:projectId/members', authorizeRole(['Reviewer']), async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
     const { userId } = req.body; // ID of the user to be added
@@ -60,7 +51,6 @@ projectRouter.post('/:projectId/members', authorizeRole(['Reviewer']), async (re
     }
 
     try {
-        // In a real app, you would check if the authenticated user is the project owner before allowing this.
         await addMemberToProject(projectId, userId, 'Reviewer');
         res.status(200).json({ message: `User ${userId} added as Reviewer to project ${projectId}.` });
     } catch (error) {
@@ -68,7 +58,7 @@ projectRouter.post('/:projectId/members', authorizeRole(['Reviewer']), async (re
     }
 });
 
-// DELETE /api/projects/:id/members/:userId - Remove a user from a project
+//Remove a user from a project
 projectRouter.delete('/:projectId/members/:userId', authorizeRole(['Reviewer']), async (req: Request, res: Response) => {
     const projectId = parseInt(req.params.projectId);
     const userId = parseInt(req.params.userId);
@@ -82,6 +72,22 @@ projectRouter.delete('/:projectId/members/:userId', authorizeRole(['Reviewer']),
         }
     } catch (error) {
         res.status(500).json({ message: 'Failed to remove member.' });
+    }
+});
+
+
+projectRouter.get('/:projectId/stats', authorizeRole(['Reviewer']), async (req: Request, res: Response) => {
+    const projectId = parseInt(req.params.projectId);
+
+
+    try {
+        const stats = await getProjectAnalytics(projectId);
+        if (!stats) {
+             return res.status(404).json({ message: 'Project not found or no data available.' });
+        }
+        res.status(200).json(stats);
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to retrieve project analytics.' });
     }
 });
 

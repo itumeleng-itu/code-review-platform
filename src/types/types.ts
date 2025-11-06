@@ -44,3 +44,20 @@ export interface DbReview {
     notes: string | null;
     created_at: Date;
 }
+
+export interface DbNotification {
+    id: number;
+    user_id: number;
+    message: string;
+    link_to: string | null;
+    is_read: boolean;
+    created_at: Date;
+}
+
+export interface ProjectStats {
+    total_submissions: number;
+    approved_percent: string;
+    avg_review_time: string;
+    active_reviewers: number;
+    most_commented_submission_id: number | null;
+}

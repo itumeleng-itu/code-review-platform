@@ -7,6 +7,7 @@ import projectRouter from './routes/project-routes';
 import submissionRouter from './routes/submission-routes';
 import commentRouter from "./routes/comment-routes";
 import reviewRouter from "./routes/review-routes";
+import { errorHandler } from './middleware/error-handler';
 
 
 dotenv.config()
@@ -24,6 +25,7 @@ const startServer = async () => {
     app.use('/api/submissions',submissionRouter)
     app.use('/api/comments', commentRouter);
     app.use('/api/submissions', reviewRouter);
+    app.use(errorHandler);
 
     app.listen(PORT, () => {
         console.log(`Server listening on port ${PORT}`);
