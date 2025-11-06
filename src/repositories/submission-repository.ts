@@ -65,6 +65,34 @@ export const findSubmissionById = async (submissionId:number): Promise<DbSubmiss
 }
 
 //updating the status of a submission
-export const updateSubmissionStatus = async (submissionId:number) : Promise<DbSubmission> =>{
-    const text = ``;
+export const updateSubmissionStatus = async (submissionId:number, newStatus:SubmissionStatus) : Promise<DbSubmission> =>{
+    const text = `UPDATE submissions
+        SET status = $1, updated_at = NOW()
+        WHERE id = $2
+        RETURNING id, title, status, updated_at;`;
+    const params =[newStatus, submissionId];
+
+    try{
+        const result : QueryResult<DbSubmission> = await query(text, params);
+        return result.rows[0];
+    }catch(error) {
+        console.error("operation failed ");
+        throw new Error (`failed to edit submission for ${submissionId}`);  
+    }
 }
+
+//Delete a submission.
+export const deleteSubmission = async (submissionId:number) : Promise<boolean> => {
+    const text = 'DELETE FROM submissions WHERE id=$1 RETURNIG id';
+    const params =[submissionId]
+
+    try{
+        const result = await query (text, params);
+        return result.rowCount!>0;
+    }
+    catch(error) {
+        console.error("Failed ");
+        throw new Error(`Failed to delete submission ${submissionId}`);
+    }
+}
+
