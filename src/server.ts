@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { dbConnection } from "../src/database/db";
 import authRouter from './routes/auth-routes';
 import userRouter from './routes/user-routes';
+import projectRouter from './routes/project-routes';
 
 
 dotenv.config()
@@ -16,6 +17,7 @@ const startServer = async () => {
 
     app.use('/api/auth', authRouter);
     app.use('/api/users', userRouter);
+    app.use('/api/projects', projectRouter);
 
     app.listen(PORT, () => {
         console.log(`🚀 Server listening on port ${PORT}`);
