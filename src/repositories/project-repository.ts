@@ -1,4 +1,3 @@
-// src/repositories/project-repository.ts
 import { query } from '../database/db';
 import { QueryResult } from 'pg';
 
@@ -10,9 +9,8 @@ export interface DbProject {
     created_at: Date;
 }
 
-/**
- * Creates a new project.
- */
+
+// Creates a new project.
 export const createProject = async (name: string, description: string, ownerId: number): Promise<DbProject> => {
     const text = `
         INSERT INTO projects (name, description, owner_id)
@@ -23,7 +21,6 @@ export const createProject = async (name: string, description: string, ownerId: 
 
     try {
         const result: QueryResult<DbProject> = await query(text, params);
-        // Also automatically add the owner as a project member (as a Reviewer by default)
         await addMemberToProject(result.rows[0].id, ownerId, 'Reviewer'); 
         
         return result.rows[0];
@@ -36,9 +33,7 @@ export const createProject = async (name: string, description: string, ownerId: 
     }
 };
 
-/**
- * Retrieves all projects a user is a member of.
- */
+//view all projects by memmeber id
 export const listProjectsByUserId = async (userId: number): Promise<DbProject[]> => {
     const text = `
         SELECT p.id, p.name, p.description, p.owner_id, p.created_at
@@ -57,12 +52,9 @@ export const listProjectsByUserId = async (userId: number): Promise<DbProject[]>
     }
 };
 
-/**
- * Assigns a user (Reviewer) to a project.
- */
+//add member
 export const addMemberToProject = async (projectId: number, userId: number, role: 'Submitter' | 'Reviewer'): Promise<void> => {
-    // Only Reviewer role is needed here for assignment, as submitters are implied by the Submissions.
-    // However, we'll keep the project_role column for flexibility.
+
     const text = `
         INSERT INTO project_members (project_id, user_id, project_role)
         VALUES ($1, $2, $3)
@@ -71,24 +63,21 @@ export const addMemberToProject = async (projectId: number, userId: number, role
     const params = [projectId, userId, role];
 
     try {
-        await query(text, params);
+        const result: QueryResult<DbProject> = await query(text, params);
     } catch (error) {
         console.error('Repo Error: addMemberToProject', error);
         throw new Error('Failed to add member to project.');
     }
 };
 
-/**
- * Removes a user from a project's members list.
- */
+//remove member
 export const removeMemberFromProject = async (projectId: number, userId: number): Promise<boolean> => {
     const text = 'DELETE FROM project_members WHERE project_id = $1 AND user_id = $2 RETURNING user_id;';
     const params = [projectId, userId];
     
     try {
         const result = await query(text, params);
-        // Returns true if a row was deleted, false otherwise
-        return result.rowCount! > 0;
+        return result.rowCount!>0;
     } catch (error) {
         console.error('Repo Error: removeMemberFromProject', error);
         throw new Error('Failed to remove member from project.');

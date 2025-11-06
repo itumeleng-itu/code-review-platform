@@ -24,3 +24,23 @@ export interface DbSubmission {
     created_at: Date;
     updated_at: Date;
 }
+export interface DbComment {
+    id: number;
+    submission_id: number;
+    author_id: number;
+    comment_text: string;
+    line_number: number | null;
+    is_inline: boolean;
+    created_at: Date;
+    updated_at: Date;
+}
+
+export type ReviewAction = 'approved' | 'changes_requested';
+export interface DbReview {
+    id: number;
+    submission_id: number;
+    reviewer_id: number;
+    action: ReviewAction;
+    notes: string | null;
+    created_at: Date;
+}
