@@ -1,7 +1,7 @@
 // src/routes/review-routes.ts
 import { Router, Request, Response } from 'express';
 import { authenticateToken, authorizeRole } from '../middleware/auth-middleware'; 
-import { updateSubmissionStatus, findSubmissionById  } from '../../src/repositories/submission-repository'
+import { updateSubmissionStatus, findSubmissionById  } from '../repositories/submission-repository'
 import { recordReviewAction, getReviewHistory } from '../repositories/review-repository';
 import {ReviewAction}  from '../types/types'
 

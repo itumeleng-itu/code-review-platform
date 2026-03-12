@@ -95,4 +95,3 @@ export const deleteSubmission = async (submissionId:number) : Promise<boolean> =
         throw new Error(`Failed to delete submission ${submissionId}`);
     }
 }
-

@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
-import { dbConnection } from "../src/database/db";
+import { dbConnection } from "./database/db";
 import authRouter from './routes/auth-routes';
 import userRouter from './routes/user-routes';
 import projectRouter from './routes/project-routes';
@@ -13,7 +13,7 @@ import { errorHandler } from './middleware/error-handler';
 dotenv.config()
 
 const app = express();
-const PORT = process.env.DB_PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
     await dbConnection();

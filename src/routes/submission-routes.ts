@@ -69,7 +69,7 @@ submissionRouter.put('/:id/status', authorizeRole(['Reviewer','Submitter']), asy
     if(isNaN(submissionId)){
         return res.status(400).json({message:"invalid id"})
     }
-    if(!new_status || allowedStatuses.includes(new_status)){
+    if(!new_status || !allowedStatuses.includes(new_status)){
         return res.status(400).json({message:`new status must be part of ${allowedStatuses}`})
     }
 
@@ -127,4 +127,3 @@ submissionRouter.delete('/:id', authorizeRole(['Reviewer', 'Submitter']), async 
 });
 
 export default submissionRouter;
-

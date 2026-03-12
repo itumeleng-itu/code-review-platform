@@ -49,4 +49,3 @@ export const authorizeRole = (requiredRoles: Array<'Submitter' | 'Reviewer'>) =>
         }
     }
 }
-
